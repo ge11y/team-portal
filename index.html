@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NO LIMIT .sight.</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root {
+      --bg: #F5F5DC;
+      --bg-dark: #1a1a1a;
+      --text: #1a1a1a;
+      --text-light: #F5F5DC;
+      --accent: #2a2a2a;
+      --border: #d4d4c8;
+    }
+    
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    /* Global rounded corners */
+    .card, input, .password-box input { border-radius: 8px; }
+    
+    /* Password Screen */
+    #password-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    #password-screen.hidden { display: none; }
+    
+    .password-box {
+      text-align: center;
+    }
+    
+    .password-box h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+    
+    .password-box .sight {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.5em;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+    
+    .password-box input {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: 2px solid var(--text);
+      background: transparent;
+      outline: none;
+      text-align: center;
+      letter-spacing: 0.2em;
+      width: 300px;
+    }
+    
+    .password-box input:focus {
+      border-color: #666;
+    }
+    
+    .password-box p {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .error { color: #c00; margin-top: 0.5rem; }
+    
+    /* Main Content */
+    #main-content { display: none; }
+    #main-content.visible { display: block; }
+    
+    /* Header */
+    header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    header h1 { display: none; }
+    
+    .header-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      display: none;
+    }
+    
+    /* Logo (Always Visible) */
+    #logo {
+      position: fixed;
+      top: 1.5rem;
+      left: 2rem;
+      z-index: 999;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--text);
+    }
+    
+    #logo span { background: var(--bg); padding: 0.25rem 0.5rem; }
+    
+    /* Main Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem 0 8rem;
+    }
+    
+    .tab {
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .tab:hover { color: var(--text); }
+    
+    .tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+    
+    /* Sub-tabs */
+    .sub-tabs {
+      display: flex;
+      padding: 1rem 2rem 1rem 10rem;
+      border-bottom: 1px solid var(--border);
+      gap: 2rem;
+    }
+    
+    .sub-tab {
+      font-size: 0.8rem;
+      color: #888;
+      cursor: pointer;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid transparent;
+    }
+    
+    .sub-tab:hover, .sub-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+    
+    /* Content */
+    .content { padding: 2rem; }
+    
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      border-radius: 8px;
+      transition: border-color 0.2s;
+    }
+    
+    .card:hover { border-color: var(--text); }
+    
+    .card h3 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .card p {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .card a {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      text-decoration: underline;
+    }
+    
+    /* Empty State */
+    .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #888;
+    }
+    
+    .empty p { font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  
+  <!-- Password Screen -->
+  <div id="password-screen">
+    <div class="password-box">
+      <h1>NO LIMIT</h1>
+      <p class="sight">.sight.</p>
+      <input type="password" id="password-input" placeholder="Enter password">
+      <p id="error-msg" class="error"></p>
+    </div>
+  </div>
+  
+  <!-- Logo (Always Visible) -->
+  <div id="logo"><span>NO LIMIT</span></div>
+  
+  <!-- Main Content -->
+  <div id="main-content">
+    <header>
+      <!-- Logo in header area -->
+      <div class="header-logo">NO LIMIT</div>
+    </header>
+    
+    <!-- Main Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="training">Training</div>
+      <div class="tab" data-tab="growing">Growing</div>
+      <div class="tab" data-tab="tbd">Coming Soon</div>
+    </div>
+    
+    <!-- Training Sub-tabs -->
+    <div class="sub-tabs" id="training-subs">
+      <div class="sub-tab active" data-sub="videos">Videos</div>
+      <div class="sub-tab" data-sub="podcasts">Podcasts</div>
+      <div class="sub-tab" data-sub="scripts">Scripts</div>
+    </div>
+    
+    <!-- Content Sections -->
+    <div class="content">
+      
+      <!-- Training: Videos -->
+      <div class="section active" id="training-videos">
+        <h2>Training Videos</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Getting Started</h3>
+            <p>Introduction to our workflow and tools</p>
+            <a href="#">Watch →</a>
+          </div>
+          <div class="card">
+            <h3>Content Framework</h3>
+            <p>How to structure your content</p>
+            <a href="#">Watch →</a>
+          </div>
+          <div class="card">
+            <h3>Engagement Tips</h3>
+            <p>Best practices for growing your audience</p>
+            <a href="#">Watch →</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Training: Podcasts -->
+      <div class="section" id="training-podcasts">
+        <h2>Podcasts</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Episode 1: Finding Your Voice</h3>
+            <p>How to stand out in a crowded space</p>
+            <a href="#">Listen →</a>
+          </div>
+          <div class="card">
+            <h3>Episode 2: Building Systems</h3>
+            <p>Creating repeatable processes</p>
+            <a href="#">Listen →</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Training: Scripts -->
+      <div class="section" id="training-scripts">
+        <h2>Scripts</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Intro Script Template</h3>
+            <p>Standard opening for videos</p>
+            <a href="#">View →</a>
+          </div>
+          <div class="card">
+            <h3>Hook Templates</h3>
+            <p>Attention-grabbing openings</p>
+            <a href="#">View →</a>
+          </div>
+          <div class="card">
+            <h3>CTA Scripts</h3>
+            <p>Call-to-action templates</p>
+            <a href="#">View →</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Growing -->
+      <div class="section" id="growing">
+        <h2>Growing</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Social Media Tools</h3>
+            <p>Scheduling, analytics, and management tools</p>
+            <a href="#">Access →</a>
+          </div>
+          <div class="card">
+            <h3>Account Handles</h3>
+            <p>List of all our team accounts</p>
+            <a href="#">View →</a>
+          </div>
+          <div class="card">
+            <h3>Video Templates</h3>
+            <p>Templates for Reels, TikTok, YouTube Shorts</p>
+            <a href="#">Download →</a>
+          </div>
+          <div class="card">
+            <h3>Post Templates</h3>
+            <p>Instagram, Twitter, LinkedIn templates</p>
+            <a href="#">Download →</a>
+          </div>
+          <div class="card">
+            <h3>Tweet Templates</h3>
+            <p>High-engagement tweet formats</p>
+            <a href="#">Download →</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TBD -->
+      <div class="section" id="tbd">
+        <h2>Coming Soon</h2>
+        <div class="empty">
+          <p>Third section coming later</p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    // Password Protection
+    const correctPassword = 'Nolimitsoulas26';
+    const passwordScreen = document.getElementById('password-screen');
+    const mainContent = document.getElementById('main-content');
+    const passwordInput = document.getElementById('password-input');
+    const errorMsg = document.getElementById('error-msg');
+    
+    passwordInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        if (passwordInput.value === correctPassword) {
+          passwordScreen.classList.add('hidden');
+          mainContent.classList.add('visible');
+        } else {
+          errorMsg.textContent = 'Incorrect password';
+          passwordInput.value = '';
+        }
+      }
+    });
+    
+    // Tab Navigation
+    const tabs = document.querySelectorAll('.tab');
+    const trainingSubs = document.getElementById('training-subs');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+        
+        // Update tabs
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Show/hide sub-tabs
+        trainingSubs.style.display = tabId === 'training' ? 'flex' : 'none';
+        
+        // Show section
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        if (tabId === 'training') {
+          document.getElementById('training-videos').classList.add('active');
+        } else if (tabId === 'growing') {
+          document.getElementById('growing').classList.add('active');
+        } else {
+          document.getElementById('tbd').classList.add('active');
+        }
+      });
+    });
+    
+    // Sub-tab Navigation (Training)
+    const subTabs = document.querySelectorAll('.sub-tab');
+    
+    subTabs.forEach(sub => {
+      sub.addEventListener('click', () => {
+        const subId = sub.dataset.sub;
+        
+        subTabs.forEach(s => s.classList.remove('active'));
+        sub.classList.add('active');
+        
+        document.querySelectorAll('#training .section, .section[id^="training-"]').forEach(s => s.classList.remove('active'));
+        document.getElementById(`training-${subId}`).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
